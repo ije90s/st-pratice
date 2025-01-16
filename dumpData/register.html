@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>등록 Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f9;
+      }
+      .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="checkbox"] {
+        width: calc(100% - 10px);
+        padding: 8px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      input[type="checkbox"] {
+        width: auto;
+        margin-right: 10px;
+      }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        color: #fff;
+        background: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+    <script>
+      async function register(event) {
+        event.preventDefault(); // Prevent form from submitting
+        const ci = document.getElementById("ci");
+        const userCode = document.getElementById("userCode");
+        const dummyData = document.getElementById("dummyData");
+
+        if (!ci.value.trim()) {
+          alert("CI는 필수입니다.");
+          ci.focus();
+          return;
+        }
+
+        if (!userCode.value.trim()) {
+          alert("Randev User Code는 필수입니다.");
+          userCode.focus();
+          return;
+        }
+
+        if (!dummyData.value.trim()) {
+          alert("더미데이터를 생성해야 합니다.");
+          return;
+        }
+
+        const data = {
+          ci: ci.value,
+          userCode: userCode.value,
+          dummyData: dummyData.value,
+        };
+        try {
+          const response = await fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // JSON 데이터 전송을 알림
+            },
+            body: JSON.stringify(data), // JSON 문자열로 변환
+          });
+
+          if (response.ok) {
+            alert(`성공적으로 등록되었습니다`);
+          } else {
+            alert("서버에서 오류가 발생했습니다. 다시 시도해주세요.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      }
+
+      function getRandomNumber() {
+        return Math.floor(Math.random() * 2000) + 1;
+      }
+
+      function getDummyData() {
+        const dummyData = document.getElementById("dummyData");
+        const dummyResult = document.getElementById("dummyResult");
+        const today = new Date();
+        const startDate = new Date();
+        startDate.setDate(today.getDate() - 10); // 10일 전 날짜 계산
+
+        const arr = [];
+        for (let i = 0; i < 10; i++) {
+          let newDate = new Date(startDate);
+          newDate.setDate(startDate.getDate() + i);
+          const formattedDate = newDate.toISOString().split("T")[0];
+          arr.push({
+            step: getRandomNumber(),
+            date: formattedDate, // 10일 전부터 순차적으로 날짜 추가
+          });
+        }
+        dummyData.value = JSON.stringify(arr);
+        dummyResult.value = JSON.stringify(arr, null, 2); // 더 읽기 쉬운 형식으로 JSON 넣기
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>등록 Test</h1>
+      <form>
+        <div class="form-group">
+          <label for="ci">CI</label>
+          <input
+            type="text"
+            id="ci"
+            name="ci"
+            value="11111111111111111"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="userCode">userCode</label>
+          <input
+            type="text"
+            id="userCode"
+            name="userCode"
+            value="111111111111"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="dummyData">더미 데이터</label>
+          <input type="button" value="생성" onclick="getDummyData();" />
+          <input type="hidden" id="dummyData" />
+        </div>
+        <div>
+          <textarea id="dummyResult" rows="10" cols="50" readonly></textarea>
+        </div>
+        <button onclick="register(event)">등록</button>
+      </form>
+    </div>
+  </body>
+</html>
