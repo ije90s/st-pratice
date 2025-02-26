@@ -24,7 +24,6 @@ import { config } from '../config';
       store: redisStore,
       host: config.redis.host,
       port: config.redis.port,
-      ttl: config.redis.ttl,
     }),
   ],
   controllers: [BoardController],

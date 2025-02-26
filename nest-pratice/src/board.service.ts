@@ -16,7 +16,7 @@ export class BoardService {
   async getBoards(page: number, size: number): Promise<Board[]> {
     const cacheKey = `boards:page:${page}:size:${size}`;
     const cachedData = await this.cacheManager.get<Board[]>(cacheKey);
-    console.log(cacheKey, await this.cacheManager.get(cacheKey));
+    //console.log(cacheKey, await this.cacheManager.get(cacheKey));
     if (cachedData) {
       return cachedData;
     }
@@ -28,7 +28,7 @@ export class BoardService {
       take: size,
     });
 
-    await this.cacheManager.set(cacheKey, boards);
+    await this.cacheManager.set(cacheKey, boards, 60 * 1000);
 
     return boards;
   }
